@@ -1,0 +1,36 @@
+﻿using Flurl;
+using Flurl.Http;
+
+namespace Trli;
+
+public class ApiService
+{
+	const string ApiKeyEnvName = "TRELLO_API_KEY";
+	const string TokenEnvName = "TRELLO_TOKEN";
+	const string TrelloBaseApi = "https://api.trello.com/1/";
+    private const string EmptyEnvVariableErrorMessage = $"ERROR: Empty API environment variable(s) found.  Please ensure that the environment variables {ApiKeyEnvName} and {TokenEnvName} are defined in the host environment.";
+
+    private readonly string? _trelloApiKey = Environment.GetEnvironmentVariable(ApiKeyEnvName);
+	private readonly string? _trelloToken = Environment.GetEnvironmentVariable(TokenEnvName);
+	
+	public async Task<List<Board>> GetBoardsAsync(CancellationToken? cancellationToken = null)
+	{
+		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
+		{
+			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
+		}
+
+		var results = await TrelloBaseApi
+			.AppendPathSegment("members/me/boards")
+			.SetQueryParams(new Dictionary<string, string>
+			{
+				{ "key", _trelloApiKey },
+				{ "token", _trelloToken },
+				{ "filter", "open" }
+			})
+			.WithHeader("Accept", "application/json")
+			.GetJsonAsync<List<Board>>();
+
+		return results;
+	}
+}
