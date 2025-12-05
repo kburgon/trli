@@ -59,4 +59,30 @@ public class ApiService
 
 		return results;
 	}
+
+	public async Task<List<TrelloCard>> GetCards(string boardId, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
+		{
+			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
+		}
+
+		if (string.IsNullOrEmpty(boardId))
+		{
+			throw new ArgumentException($"{nameof(boardId)} cannot be empty.");
+		}
+
+		var results = await TrelloBaseApi
+			.AppendPathSegment($"boards/{boardId}/cards")
+			.SetQueryParams(new Dictionary<string, string>
+			{
+				{ "key", _trelloApiKey },
+				{ "token", _trelloToken },
+				{ "checklists", "all"}
+			})
+			.WithHeader("Accept", "application/json")
+			.GetJsonAsync<List<TrelloCard>>(cancellationToken: cancellationToken);
+
+		return results;
+	}
 }

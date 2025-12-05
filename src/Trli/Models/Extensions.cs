@@ -60,7 +60,36 @@ public static class Extensions
 		return builder.ToString();
 	}
 
-	public static void AppendPrintColumn(this StringBuilder builder, object value, int colMaxCharLength)
+	public static string ToConsoleString(this List<TrelloCard> cards)
+	{
+		StringBuilder builder = new();
+		var idMaxLength = 25;
+		var listIdMaxLength = 25;
+		var nameMaxLength = 30;
+		var dueMaxLength = 25;
+		var closedMaxLength = 8;
+
+		builder.AppendPrintColumn("ID", idMaxLength);
+		builder.AppendPrintColumn("LIST_ID", listIdMaxLength);
+		builder.AppendPrintColumn("NAME", nameMaxLength);
+		builder.AppendPrintColumn("DUE_DATE", dueMaxLength);
+		builder.AppendPrintColumn("CLOSED", closedMaxLength);
+		builder.AppendLine();
+
+		foreach (var card in cards)
+		{
+			builder.AppendPrintColumn(card.Id, idMaxLength);
+			builder.AppendPrintColumn(card.ListId, listIdMaxLength);
+			builder.AppendPrintColumn(card.Name, nameMaxLength);
+			builder.AppendPrintColumn(card.Due, dueMaxLength);
+			builder.AppendPrintColumn(card.Closed, closedMaxLength);
+			builder.AppendLine();
+		}
+
+		return builder.ToString();
+	}
+
+	public static void AppendPrintColumn(this StringBuilder builder, object? value, int colMaxCharLength)
 	{
 		var valueText = value?.ToString() ?? string.Empty;
 		if (valueText.Length > colMaxCharLength)

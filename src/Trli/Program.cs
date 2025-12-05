@@ -30,9 +30,10 @@ app.AddSubCommand("card", conf =>
 {
 	conf.AddCommand("all", async ([Option("board")] string boardId, [Option("list")] string? listId, ApiService service) =>
 	{
-		
-	})
-})
+		var results = await service.GetCards(boardId);
+		Console.WriteLine(results.ToConsoleString());
+	});
+});
 
 
 app.Run();
