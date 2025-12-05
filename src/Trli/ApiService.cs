@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using Flurl.Http;
+using Trli.Models;
 
 namespace Trli;
 
@@ -30,6 +31,31 @@ public class ApiService
 			})
 			.WithHeader("Accept", "application/json")
 			.GetJsonAsync<List<Board>>();
+
+		return results;
+	}
+
+	public async Task<List<TrelloList>> GetLists(string boardId, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
+		{
+			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
+		}
+
+		if (string.IsNullOrEmpty(boardId))
+		{
+			throw new ArgumentException($"{nameof(boardId)} cannot be empty.");
+		}
+
+		var results = await TrelloBaseApi
+			.AppendPathSegment($"boards/{boardId}/lists")
+			.SetQueryParams(new Dictionary<string, string>
+			{
+				{ "key", _trelloApiKey },
+				{ "token", _trelloToken }
+			})
+			.WithHeader("Accept", "application/json")
+			.GetJsonAsync<List<TrelloList>>(cancellationToken: cancellationToken);
 
 		return results;
 	}

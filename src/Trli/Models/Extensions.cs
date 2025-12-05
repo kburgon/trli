@@ -1,33 +1,9 @@
 ﻿using System.Text;
-using System.Text.Json.Serialization;
+using Cocona.Command.BuiltIn;
 
-namespace Trli;
+namespace Trli.Models;
 
-public record Board
-{
-	[JsonPropertyName("id")]
-	public string Id { get; set; } = string.Empty;
-
-	[JsonPropertyName("idOrganization")]
-	public string OrganizationId { get; set; } = string.Empty;
-
-	[JsonPropertyName("name")]
-	public string Name { get; set; } = string.Empty;
-
-	[JsonPropertyName("desc")]
-	public string Description { get; set; } = string.Empty;
-
-	[JsonPropertyName("url")]
-	public string Url { get; set; } = string.Empty;
-
-	[JsonPropertyName("starred")]
-	public bool Starred { get; set; } = false;
-
-	[JsonPropertyName("shortUrl")]
-	public string ShortUrl { get; set; } = string.Empty;
-}
-
-public static class BoardExtensions
+public static class Extensions
 {
 	public static string ToConsoleString(this IEnumerable<Board> boards)
 	{
@@ -52,6 +28,32 @@ public static class BoardExtensions
 			builder.AppendPrintColumn(board.Name, nameCharLength);
 			builder.AppendPrintColumn(board.Description, descCharLength);
 			builder.AppendPrintColumn(board.Starred, starredCharLength);
+			builder.AppendLine();
+		}
+
+		return builder.ToString();
+	}
+
+	public static string ToConsoleString(this List<TrelloList> lists)
+	{
+		StringBuilder builder = new();
+		var idMaxLength = 25;
+		var nameMaxLength = 25;
+		var closedMaxLength = 6;
+		var boardIdMaxLength = 25;
+
+		builder.AppendPrintColumn("ID", idMaxLength);
+		builder.AppendPrintColumn("BOARD_ID", boardIdMaxLength);
+		builder.AppendPrintColumn("NAME", nameMaxLength);
+		builder.AppendPrintColumn("CLOSED", closedMaxLength);
+		builder.AppendLine();
+
+		foreach (var list in lists)
+		{
+			builder.AppendPrintColumn(list.Id, idMaxLength);
+			builder.AppendPrintColumn(list.BoardId, boardIdMaxLength);
+			builder.AppendPrintColumn(list.Name, nameMaxLength);
+			builder.AppendPrintColumn(list.Closed, closedMaxLength);
 			builder.AppendLine();
 		}
 

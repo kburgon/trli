@@ -1,15 +1,35 @@
 ﻿using Cocona;
+using Microsoft.Extensions.DependencyInjection;
 using Trli;
+using Trli.Models;
 
 var builder = CoconaApp.CreateBuilder();
 
+builder.Services.AddTransient<ApiService>();
+
 var app = builder.Build();
 
-app.AddCommand("board", async ([Ignore] CancellationToken ct) =>
+app.AddCommand("board", async (ApiService service) =>
 {
-	ApiService service = new();
-	var results = await service.GetBoardsAsync(ct);
+	var results = await service.GetBoardsAsync();
 	Console.WriteLine(results.ToConsoleString());
 });
+
+app.AddSubCommand("list", conf =>
+{
+	conf.AddCommand("new", async (string board, string name, ApiService service) => 
+	{
+		Console.WriteLine($"Flag {board}");
+	});
+
+	conf.AddCommand("all", async (
+        [Option("board", Description = "The ID of the board to filter lists to.")] string boardId,
+        ApiService service) => 
+	{
+		var results = await service.GetLists(boardId);
+		Console.WriteLine(results.ToConsoleString());
+	});
+});
+
 
 app.Run();
