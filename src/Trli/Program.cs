@@ -17,11 +17,6 @@ app.AddCommand("board", async (ApiService service) =>
 
 app.AddSubCommand("list", conf =>
 {
-	conf.AddCommand("new", async (string board, string name, ApiService service) => 
-	{
-		Console.WriteLine($"Flag {board}");
-	});
-
 	conf.AddCommand("all", async (
         [Option("board", Description = "The ID of the board to filter lists to.")] string boardId,
         ApiService service) => 
@@ -30,6 +25,14 @@ app.AddSubCommand("list", conf =>
 		Console.WriteLine(results.ToConsoleString());
 	});
 });
+
+app.AddSubCommand("card", conf =>
+{
+	conf.AddCommand("all", async ([Option("board")] string boardId, [Option("list")] string? listId, ApiService service) =>
+	{
+		
+	})
+})
 
 
 app.Run();
