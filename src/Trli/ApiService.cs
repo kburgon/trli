@@ -60,7 +60,7 @@ public class ApiService
 		return results;
 	}
 
-	public async Task<List<TrelloCard>> GetCards(string boardId, CancellationToken cancellationToken = default)
+	public async Task<List<TrelloCard>> GetCards(string boardId, string? listId = null, CancellationToken cancellationToken = default)
 	{
 		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
 		{
@@ -72,6 +72,8 @@ public class ApiService
 			throw new ArgumentException($"{nameof(boardId)} cannot be empty.");
 		}
 
+		if (listId == null) Console.WriteLine($"WARNING: {nameof(listId)} is null.");
+
 		var results = await TrelloBaseApi
 			.AppendPathSegment($"boards/{boardId}/cards")
 			.SetQueryParams(new Dictionary<string, string>
@@ -82,6 +84,11 @@ public class ApiService
 			})
 			.WithHeader("Accept", "application/json")
 			.GetJsonAsync<List<TrelloCard>>(cancellationToken: cancellationToken);
+
+		if (!string.IsNullOrEmpty(listId))
+		{
+			return [.. results.Where(card => card.ListId == listId)];
+		}
 
 		return results;
 	}

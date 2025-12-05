@@ -28,9 +28,12 @@ app.AddSubCommand("list", conf =>
 
 app.AddSubCommand("card", conf =>
 {
-	conf.AddCommand("all", async ([Option("board")] string boardId, [Option("list")] string? listId, ApiService service) =>
+	conf.AddCommand("all", async (
+        [Option("board", Description = "The ID of the board to filter cards to.")] string boardId,
+        [Option("list", Description = "The ID of the list to filter carde to.")] string? listId,
+        ApiService service) =>
 	{
-		var results = await service.GetCards(boardId);
+		var results = await service.GetCards(boardId, listId);
 		Console.WriteLine(results.ToConsoleString());
 	});
 });
