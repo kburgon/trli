@@ -28,11 +28,19 @@ app.AddSubCommand("list", conf =>
 
 app.AddSubCommand("card", conf =>
 {
-	conf.AddCommand("all", async (
+	conf.AddCommand("show", async (
         [Option("board", Description = "The ID of the board to filter cards to.")] string boardId,
         [Option("list", Description = "The ID of the list to filter carde to.")] string? listId,
+		[Option("card", Description = "The ID of the card to display.")] string? cardId,
         ApiService service) =>
 	{
+		if (cardId != null)
+		{
+			var cardResult = await service.GetCardAsync(cardId);
+			Console.WriteLine(cardResult.ToConsoleString());
+			return;
+		}
+
 		var results = await service.GetCards(boardId, listId);
 		Console.WriteLine(results.ToConsoleString());
 	});

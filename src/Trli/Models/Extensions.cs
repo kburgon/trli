@@ -89,6 +89,47 @@ public static class Extensions
 		return builder.ToString();
 	}
 
+	public static string ToConsoleString(this TrelloCard card)
+	{
+		StringBuilder builder = new();
+		builder.Append("ID: ").Append(card.Id).AppendLine();
+		builder.Append("NAME: ").Append(card.Name).AppendLine();
+		builder.Append("DUE DATE: ").Append(card.Due).AppendLine();
+		builder.Append("DUE COMPLETE: ").Append(card.DueComplete).AppendLine();
+		builder.AppendLine().Append("DESCRIPTION").AppendLine();
+		builder.Append(card.Description).AppendLine().AppendLine();
+
+		if (card.Checklists == null)
+		{
+			return builder.ToString();
+		}
+
+		builder.Append("CHECKLISTS").AppendLine().AppendLine();
+		
+		foreach (var checklist in card.Checklists)
+		{
+			builder.Append(checklist.Name).AppendLine();
+			foreach (var clItem in checklist.CheckItems)
+			{
+				builder.Append("  ");
+				if (clItem.State == "incomplete")
+				{
+					builder.Append("[ ] ");
+				}
+				else
+				{
+					builder.Append("[X] ");
+				}
+
+				builder.Append(clItem.Name).AppendLine();
+			}
+
+			builder.AppendLine();
+		}
+
+		return builder.ToString();
+	}
+
 	public static void AppendPrintColumn(this StringBuilder builder, object? value, int colMaxCharLength)
 	{
 		var valueText = value?.ToString() ?? string.Empty;

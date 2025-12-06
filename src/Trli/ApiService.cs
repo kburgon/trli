@@ -1,4 +1,6 @@
-﻿using Flurl;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Flurl;
 using Flurl.Http;
 using Trli.Models;
 
@@ -72,8 +74,6 @@ public class ApiService
 			throw new ArgumentException($"{nameof(boardId)} cannot be empty.");
 		}
 
-		if (listId == null) Console.WriteLine($"WARNING: {nameof(listId)} is null.");
-
 		var results = await TrelloBaseApi
 			.AppendPathSegment($"boards/{boardId}/cards")
 			.SetQueryParams(new Dictionary<string, string>
@@ -90,6 +90,33 @@ public class ApiService
 			return [.. results.Where(card => card.ListId == listId)];
 		}
 
+		return results;
+	}
+
+	public async Task<TrelloCard> GetCardAsync(string cardId, CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(cardId))
+		{
+			throw new ArgumentException($"{nameof(cardId)} cannot be empty.");
+		}
+
+		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
+		{
+			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
+		}
+
+		var results = await TrelloBaseApi
+			.AppendPathSegment($"/cards/{cardId}")
+			.SetQueryParams(new Dictionary<string, object>
+			{
+				{ "key", _trelloApiKey },
+				{ "token", _trelloToken },
+				{ "checklists", "all"},
+				{ "checkItemStates", "true" }
+			})
+			.WithHeader("Accept", "application/json")
+			.GetJsonAsync<TrelloCard>(cancellationToken: cancellationToken);
+		
 		return results;
 	}
 }

@@ -14,6 +14,5 @@ public record TrelloChecklist
 	[JsonPropertyName("idCard")]
 	public string CardId { get; set; } = string.Empty;
 
-	[JsonIgnore]
 	public List<TrelloCheckItem> CheckItems { get; set; } = [];
 }
