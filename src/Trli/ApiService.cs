@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using Flurl.Http;
+using Flurl.Http.Content;
 using Trli.Models;
 
 namespace Trli;
@@ -143,6 +144,45 @@ public class ApiService
 			})
 			.WithHeader("Accept", "application/json")
 			.PostAsync(cancellationToken: cancellationToken);
+
+		return await results.GetJsonAsync<TrelloCard>();
+	}
+
+	public async Task<TrelloCard> UpdateCardAsync(
+        string cardId,
+        string? name,
+        string? description,
+        string? listId,
+        bool? completed,
+        CancellationToken cancellationToken = default)
+	{
+		if (string.IsNullOrEmpty(cardId))
+		{
+			throw new ArgumentException($"{nameof(cardId)} cannot be empty.");
+		}
+
+		if (string.IsNullOrEmpty(_trelloApiKey) || string.IsNullOrEmpty(_trelloToken))
+		{
+			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
+		}
+
+		var apiRequest = TrelloBaseApi
+			.AppendPathSegment($"cards/{cardId}")
+			.SetQueryParams(new Dictionary<string, object?>
+			{
+				{ "key", _trelloApiKey },
+				{ "token", _trelloToken },
+				{ "name", name },
+				{ "desc", description },
+				{ "idList", listId },
+				{ "dueComplete", completed?.ToString().ToLower() }
+			})
+			.WithHeader("Accept", "application/json");
+
+		Console.WriteLine(apiRequest.Url);
+		
+		var results = await apiRequest
+			.PutAsync(cancellationToken: cancellationToken);
 
 		return await results.GetJsonAsync<TrelloCard>();
 	}

@@ -54,6 +54,41 @@ app.AddSubCommand("card", conf =>
 		var results = await service.CreateCardAsync(listId, cardName, description);
 		Console.WriteLine(results.ToConsoleString());
 	});
+
+	conf.AddCommand("update", async (
+        [Argument("id")] string cardId,
+        [Option("name", Description = "The value to update the card's name to.")] string? name,
+        [Option("description", Description = "The value to update the card's description to.")] string? description,
+        [Option("list", Description = "The ID of the list to move the card to.")] string? listId,
+        [Option("complete", Description = "Boolean value determining if the card has been completed or not.")] bool complete,
+        [Option("notcomplete", Description = "Boolean value determining if the card has been completed or not.")] bool notcomplete,
+        ApiService service) =>
+	{
+		if (complete && notcomplete)
+		{
+			throw new ArgumentException("Cannot include \"--complete\" and \"--notcomplete\" in the same command.");
+		}
+
+		// Logic to translate the two flags determining whether to update the completion status of the card.
+		// If none of the options were included, we want to leave the bool null so that it doesn't update.
+		// But inclusion of any of the options that should set the completed flag to true/false should update accordingly.
+		bool? completed;
+		if (complete && !notcomplete)
+		{
+			completed = true;
+		}
+		else if (notcomplete && !complete)
+		{
+			completed = false;
+		}
+		else
+		{
+			completed = null;
+		}
+
+		var results = await service.UpdateCardAsync(cardId, name, description, listId, completed);
+		Console.WriteLine(results.ToConsoleString());
+	});
 });
 
 app.Run();
