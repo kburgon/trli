@@ -166,7 +166,7 @@ public class ApiService
 			throw new NullReferenceException(EmptyEnvVariableErrorMessage);
 		}
 
-		var apiRequest = TrelloBaseApi
+		var results = await TrelloBaseApi
 			.AppendPathSegment($"cards/{cardId}")
 			.SetQueryParams(new Dictionary<string, object?>
 			{
@@ -177,11 +177,7 @@ public class ApiService
 				{ "idList", listId },
 				{ "dueComplete", completed?.ToString().ToLower() }
 			})
-			.WithHeader("Accept", "application/json");
-
-		Console.WriteLine(apiRequest.Url);
-		
-		var results = await apiRequest
+			.WithHeader("Accept", "application/json")
 			.PutAsync(cancellationToken: cancellationToken);
 
 		return await results.GetJsonAsync<TrelloCard>();
