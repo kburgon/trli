@@ -67,13 +67,13 @@ public static class Extensions
 		var listIdMaxLength = 25;
 		var nameMaxLength = 30;
 		var dueMaxLength = 25;
-		var closedMaxLength = 8;
+		var closedMaxLength = 9;
 
 		builder.AppendPrintColumn("ID", idMaxLength);
 		builder.AppendPrintColumn("LIST_ID", listIdMaxLength);
 		builder.AppendPrintColumn("NAME", nameMaxLength);
 		builder.AppendPrintColumn("DUE_DATE", dueMaxLength);
-		builder.AppendPrintColumn("CLOSED", closedMaxLength);
+		builder.AppendPrintColumn("COMPLETE", closedMaxLength);
 		builder.AppendLine();
 
 		foreach (var card in cards)
@@ -82,7 +82,7 @@ public static class Extensions
 			builder.AppendPrintColumn(card.ListId, listIdMaxLength);
 			builder.AppendPrintColumn(card.Name, nameMaxLength);
 			builder.AppendPrintColumn(card.Due, dueMaxLength);
-			builder.AppendPrintColumn(card.Closed, closedMaxLength);
+			builder.AppendPrintColumn(card.DueComplete, closedMaxLength);
 			builder.AppendLine();
 		}
 
