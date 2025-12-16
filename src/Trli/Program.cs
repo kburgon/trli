@@ -17,7 +17,7 @@ app.AddCommand("board", async (ApiService service) =>
 
 app.AddSubCommand("list", conf =>
 {
-	conf.AddCommand("all", async (
+	conf.AddCommand("show", async (
         [Option("board", Description = "The ID of the board to filter lists to.")] string boardId,
         ApiService service) => 
 	{
